@@ -1,0 +1,36 @@
+11) Create a table customer(acc_no, cust_name, avail_balance)
+Create table mini_statement(acc_no, avail_balance)
+Insert into customer following records:
+Customer(1000, “Fanny”, 7000);
+Customer(1001,”Peter”, 12000);
+Write a trigger to insert old values into mini_statement table(including acc_no, avail_balance as parameters)
+before updating any record in customer table
+
+
+CREATE TABLE customer (
+acc_no INT PRIMARY KEY,
+cust_name VARCHAR(255),
+avail_balance DECIMAL(10, 2)
+);
+
+
+CREATE TABLE mini_statement (
+acc_no INT,
+avail_balance DECIMAL(10, 2)
+);
+
+INSERT INTO customer (acc_no, cust_name, avail_balance) VALUES
+(1000, 'Fanny', 7000),
+(1001, 'Peter', 12000)
+
+
+DELIMITER //
+CREATE TRIGGER before_customer_update
+BEFORE UPDATE ON customer
+FOR EACH ROW
+BEGIN
+INSERT INTO mini_statement (acc_no, avail_balance)
+VALUES (OLD.acc_no, OLD.avail_balance);
+END;
+//
+DELIMITER ;
