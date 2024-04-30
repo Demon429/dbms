@@ -1,0 +1,69 @@
+
+(i) Create relations persons owns in sql
+CREATE TABLE Person (
+driver_id INT PRIMARY KEY,
+name VARCHAR(50),
+address VARCHAR(100)
+);
+
+CREATE TABLE Car (
+license VARCHAR(20) PRIMARY KEY,
+model VARCHAR(50),
+year INT
+);
+
+CREATE TABLE Accident (
+report_number INT PRIMARY KEY,
+date DATE,
+location VARCHAR(100)
+);
+
+CREATE TABLE Owns (
+driver_id INT,
+license VARCHAR(20),
+FOREIGN KEY (driver_id) REFERENCES Person(driver_id),
+FOREIGN KEY (license) REFERENCES Car(license),
+PRIMARY KEY (driver_id, license)
+);
+
+CREATE TABLE Participated (
+driver_id INT,
+license VARCHAR(20),
+report_number INT,
+damage VARCHAR(100),
+amount DECIMAL(10, 2),
+FOREIGN KEY (driver_id) REFERENCES Person(driver_id),
+FOREIGN KEY (license) REFERENCES Car(license),
+FOREIGN KEY (report_number) REFERENCES Accident(report_number),
+PRIMARY KEY (driver_id, license, report_number)
+);
+
+(ii) Add a new accident to the database, assume any values for required
+attribute.
+INSERT INTO Accident (report_number, date, location) VALUES (12345, '2024-04-
+28', 'City Center');
+
+
+(iii) Delete the SKODA belonging to 'Sachin Parker'.
+DELETE FROM Owns
+WHERE driver_id = (SELECT driver_id FROM Person WHERE name = 'Sachin
+Parker')
+AND license IN (SELECT license FROM Car WHERE model = 'SKODA');
+
+
+(iv) Find the total number of people who owned cars that were involved in
+accident in 1999.
+SELECT COUNT(DISTINCT p.driver_id) AS total_owners
+FROM Person p
+JOIN Owns o ON p.driver_id = o.driver_id
+JOIN Participated pa ON o.license = pa.license
+JOIN Accident a ON pa.report_number = a.report_number
+WHERE YEAR(a.date) = 1999;
+
+
+(v) Find the person whose names starts with 'S' and arrange in decreasing order
+of driver-id.
+SELECT *
+FROM Person
+WHERE name LIKE 'S%'
+ORDER BY driver_id DESC;
