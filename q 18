@@ -1,0 +1,30 @@
+
+BEGIN TRANSACTION;
+
+
+-- Step 1: Insert the order details into the 'orders' table
+INSERT INTO orders (customer_id, order_date, total_amount)
+VALUES (123, '2024-04-18', 150.00);
+
+
+-- Step 2: Insert the individual items of the order into the 'order_details' table
+INSERT INTO order_details (order_id, book_id, quantity, subtotal)
+VALUES
+(1, 101, 2, 50.00),
+(1, 102, 1, 30.00),
+(1, 103, 3, 70.00);
+
+-- Step 3: Perform validation to ensure total amount matches the sum of individual subtotals
+DECLARE @total DECIMAL(10, 2);
+DECLARE @subtotal DECIMAL(10, 2);
+SELECT @total = total_amount FROM orders WHERE order_id = 1;
+SELECT @subtotal = SUM(subtotal) FROM order_details WHERE order_id = 1;
+IF (@total <> @subtotal) BEGIN
+-- Rollback the transaction if validation fails
+ROLLBACK;
+PRINT 'Validation failed! Rolling back transaction.';
+END
+ELSE BEGIN
+-- Commit the transaction if validation succeeds
+COMMIT;
+PRINT 'Validation succeeded! Transaction committed.';
