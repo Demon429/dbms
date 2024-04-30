@@ -1,0 +1,86 @@
+
+CREATE TABLE authors (
+author_id INT PRIMARY KEY,
+author_name VARCHAR(100),
+country VARCHAR(100)
+);
+
+
+CREATE TABLE genres (
+genre_id INT PRIMARY KEY,
+genre_name VARCHAR(100)
+);
+
+
+CREATE TABLE books (
+book_id INT PRIMARY KEY,
+title VARCHAR(255),
+author_id INT,
+genre_id INT,
+price DECIMAL(10, 2),
+FOREIGN KEY (author_id) REFERENCES authors(author_id),
+FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+);
+
+
+CREATE TABLE customers (
+customer_id INT PRIMARY KEY,
+name VARCHAR(100),
+email VARCHAR(255),
+city VARCHAR(100)
+);
+
+
+CREATE TABLE orders (
+order_id INT PRIMARY KEY,
+customer_id INT,
+order_date DATE,
+total_amount DECIMAL(10, 2),
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+
+CREATE TABLE order_details (
+order_detail_id INT PRIMARY KEY,
+order_id INT,
+book_id INT,
+quantity INT,
+subtotal DECIMAL(10, 2),
+FOREIGN KEY (order_id) REFERENCES orders(order_id),
+FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+
+1. Get the list of books with their authors and genres
+
+SELECT b.title AS book_title, a.author_name, g.genre_name
+FROM books b
+JOIN authors a ON b.author_id = a.author_id
+JOIN genres g ON b.genre_id = g.genre_id;
+
+
+2. Get the total amount spent by each customer
+:
+SELECT c.name AS customer_name, SUM(o.total_amount) AS total_spent
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.name;
+
+
+3. Get the list of customers along with the titles of books they have ordered
+
+SELECT c.name AS customer_name, b.title AS book_title
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_details od ON o.order_id = od.order_id
+JOIN books b ON od.book_id = b.book_id;
+
+
+4. Get the top-selling authors (authors with the highest total number of book
+sales)
+SELECT a.author_name, COUNT(od.order_detail_id) AS total_sales
+FROM authors a
+JOIN books b ON a.author_id = b.author_id
+JOIN order_details od ON b.book_id = od.book_id
+GROUP BY a.author_name
+ORDER BY total_sales DESC;
