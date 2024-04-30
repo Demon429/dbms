@@ -1,0 +1,25 @@
+Step 1: Create a new user named 'bookstore_manager' with a password.
+
+
+CREATE USER 'bookstore_manager'@'localhost' IDENTIFIED BY 'your_password_here';
+
+
+Step 2: Grant the SELECT privilege on the 'books' table to the 'bookstore_manager' user.
+
+GRANT SELECT ON bookstore.books TO 'bookstore_manager'@'localhost';
+
+Step 3: Grant the INSERT, UPDATE, and DELETE privileges on the 'customers' table to the 'bookstore_manager' user.
+GRANT INSERT, UPDATE, DELETE ON bookstore.customers TO 'bookstore_manager'@'localhost';
+
+
+Verify the user creation:
+You can check whether the user 'bookstore_manager' was successfully created by querying the MySQL user table. You can use the following SQL command:
+SELECT * FROM mysql.user WHERE User = 'bookstore_manager';
+
+
+Verify the privileges:
+You can check whether the privileges were successfully granted by querying the MySQL privileges table. You can use the following SQL commands:
+SHOW GRANTS FOR 'bookstore_manager'@'localhost';
+
+SELECT * FROM information_schema.user_privileges WHERE grantee = "'bookstore_manager'@'localhost'";
+
